@@ -55,16 +55,56 @@ echo "📦 Установка зависимостей Python..."
 pip install --upgrade pip -q
 pip install python-telegram-bot python-dotenv -q
 
-# Создание .env файла
+# Запрос данных у пользователя
+echo ""
+echo "⚙️  Настройка конфигурации бота"
+echo "=================================="
+echo ""
+
+# Запрос BOT_TOKEN
+echo "📝 Получите токен бота у @BotFather в Telegram"
+echo "   (отправьте /newbot и следуйте инструкциям)"
+echo ""
+read -p "Введите BOT_TOKEN: " BOT_TOKEN
+while [ -z "$BOT_TOKEN" ]; do
+    echo "❌ Токен не может быть пустым!"
+    read -p "Введите BOT_TOKEN: " BOT_TOKEN
+done
+
+echo ""
+echo "✅ Токен сохранён"
+echo ""
+
+# Запрос ADMIN_ID
+echo "📝 Получите ваш Telegram ID у @userinfobot"
+echo "   (отправьте /start боту @userinfobot)"
+echo ""
+read -p "Введите ADMIN_ID (ваш Telegram ID): " ADMIN_ID
+while [ -z "$ADMIN_ID" ]; do
+    echo "❌ ID не может быть пустым!"
+    read -p "Введите ADMIN_ID: " ADMIN_ID
+done
+
+# Проверка что ADMIN_ID это число
+while ! [[ "$ADMIN_ID" =~ ^[0-9]+$ ]]; do
+    echo "❌ ID должен быть числом!"
+    read -p "Введите ADMIN_ID: " ADMIN_ID
+done
+
+echo ""
+echo "✅ Admin ID сохранён"
+echo ""
+
+# Создание .env файла с введенными данными
 echo "⚙️  Создание файла конфигурации..."
-cat > "$INSTALL_DIR/.env" << 'EOF'
+cat > "$INSTALL_DIR/.env" << EOF
 # Конфигурация Gallery Bot
 
 # Токен бота (получите у @BotFather в Telegram)
-BOT_TOKEN=your_bot_token_here
+BOT_TOKEN=$BOT_TOKEN
 
 # ID администратора (ваш Telegram ID, получите у @userinfobot)
-ADMIN_ID=your_admin_id_here
+ADMIN_ID=$ADMIN_ID
 
 # Файлы данных
 DATA_FILE=gallery_data.json
@@ -272,22 +312,23 @@ echo "  ✅ Установка завершена!"
 echo "=================================="
 echo ""
 echo "📁 Директория: $INSTALL_DIR"
+echo "🔑 BOT_TOKEN: ${BOT_TOKEN:0:10}..."
+echo "👤 ADMIN_ID: $ADMIN_ID"
 echo ""
 echo "📝 Следующие шаги:"
 echo ""
 echo "1. Скопируйте gallery_bot.py в директорию:"
 echo "   cp gallery_bot.py $INSTALL_DIR/"
 echo ""
-echo "2. Настройте конфигурацию:"
-echo "   nano $INSTALL_DIR/.env"
-echo "   (укажите BOT_TOKEN и ADMIN_ID)"
-echo ""
-echo "3. Запустите бота:"
+echo "2. Запустите бота:"
 echo "   sudo systemctl start gallery-bot"
 echo "   sudo systemctl enable gallery-bot  # автозапуск"
 echo ""
-echo "4. Проверьте статус:"
+echo "3. Проверьте статус:"
 echo "   sudo systemctl status gallery-bot"
 echo ""
 echo "📖 Полная инструкция: $INSTALL_DIR/README.md"
+echo ""
+echo "💡 Для изменения настроек отредактируйте:"
+echo "   nano $INSTALL_DIR/.env"
 echo ""
