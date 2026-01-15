@@ -4,19 +4,25 @@ import os
 from datetime import datetime
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, MessageHandler, filters, ContextTypes
+from dotenv import load_dotenv
 
-# Токен бота - замени на свой
-BOT_TOKEN = "7996992288:AAE7tS1YRGFyKFQiHkzoqw3a_vSHfaO87sg"
+# Загрузка переменных окружения из .env файла
+load_dotenv()
 
-# ID администратора - замени на свой
-ADMIN_ID = "8093455523"
+# Токен бота из .env
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+if not BOT_TOKEN:
+    raise ValueError("❌ BOT_TOKEN не найден в .env файле!")
 
-# Файл для хранения данных
-DATA_FILE = "gallery_data.json"
-# Папка для хранения файлов
-FILES_DIR = "gallery_files"
-# Файл для логов ошибок
-LOGS_FILE = "error_logs.json"
+# ID администратора из .env
+ADMIN_ID = os.getenv("ADMIN_ID")
+if not ADMIN_ID:
+    raise ValueError("❌ ADMIN_ID не найден в .env файле!")
+
+# Файлы данных из .env (с значениями по умолчанию)
+DATA_FILE = os.getenv("DATA_FILE", "gallery_data.json")
+FILES_DIR = os.getenv("FILES_DIR", "gallery_files")
+LOGS_FILE = os.getenv("LOGS_FILE", "error_logs.json")
 
 # Создаем папку для файлов если её нет
 os.makedirs(FILES_DIR, exist_ok=True)
@@ -1274,7 +1280,7 @@ async def back_to_gallery(update: Update, context: ContextTypes.DEFAULT_TYPE, fr
         [InlineKeyboardButton("➕ Добавить файл", callback_data=f"add_file_{friend_id}")],
         [
             InlineKeyboardButton("📅⬇️", callback_data=f"sort_gallery_{friend_id}_date_desc"),
-            InlineKeyboardButton("�⬆️", ceallback_data=f"sort_gallery_{friend_id}_date_asc"),
+            InlineKeyboardButton("�⬆️", callback_data=f"sort_gallery_{friend_id}_date_asc"),
             InlineKeyboardButton("�⬆,️", callback_data=f"sort_gallery_{friend_id}_name_asc"),
             InlineKeyboardButton("🔤⬇️", callback_data=f"sort_gallery_{friend_id}_name_desc")
         ],
@@ -1402,15 +1408,6 @@ async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     elif data_str.startswith("view_gallery_"):
         friend_id = data_str.replace("view_gallery_", "")
         await view_gallery(update, context, friend_id)
-    elif data_str.startswith("sort_gallery_"):
-        # Новый формат: sort_gallery_{friend_id}_{sort_mode}
-        parts = data_str.replace("sort_gallery_", "").rsplit("_", 1)
-        friend_id, sort_mode = parts[0], parts[1]
-        await view_gallery(update, context, friend_id, sort_mode=sort_mode)
-    elif data_str.startswith("sort_date_"):
-        # Старый формат для обратной совместимости
-        friend_id = data_str.replace("sort_date_", "")
-        await view_gallery(update, context, friend_id, sort_mode="date_desc")
     elif data_str.startswith("export_gallery_"):
         friend_id = data_str.replace("export_gallery_", "")
         await export_gallery(update, context, friend_id)
