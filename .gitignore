@@ -1,0 +1,27 @@
+# Переменные окружения
+.env
+
+# Данные бота
+gallery_data.json
+error_logs.json
+gallery_files/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
